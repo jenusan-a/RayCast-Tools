@@ -1,0 +1,64 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "google-tasks-quick-add",
+  "title": "Google Tasks Quick Add",
+  "description": "Add Google Tasks in plain English, like \"buy boots tomorrow\", and tick them off from Raycast.",
+  "icon": "extension-icon.png",
+  "author": "jenusan",
+  "categories": [
+    "Productivity"
+  ],
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "quick-add",
+      "title": "Quick Add Task",
+      "subtitle": "Google Tasks",
+      "description": "Type a task with an optional date or time, e.g. \"submit report friday\" or \"SSHS 10am-12pm tomorrow\", and press Enter.",
+      "mode": "view"
+    },
+    {
+      "name": "add-task",
+      "title": "Add Task",
+      "subtitle": "Google Tasks",
+      "description": "Add a task with a live due-date preview, notes and a choice of list.",
+      "mode": "view"
+    },
+    {
+      "name": "my-tasks",
+      "title": "My Tasks",
+      "subtitle": "Google Tasks",
+      "description": "See your tasks grouped by due date, and complete or delete them.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "clientId",
+      "title": "Google OAuth Client ID",
+      "description": "The iOS-type OAuth client ID from Google Cloud (bundle ID com.raycast). See the README.",
+      "type": "textfield",
+      "required": true
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^2.7.1",
+    "@raycast/utils": "^2.3.2",
+    "chrono-node": "^2.10.2"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.0.4",
+    "@types/node": "22.13.10",
+    "@types/react": "19.0.10",
+    "eslint": "^9.22.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  },
+  "scripts": {
+    "build": "ray build",
+    "dev": "ray develop",
+    "fix-lint": "ray lint --fix",
+    "lint": "ray lint",
+    "test": "node --experimental-strip-types --test test/*.test.ts"
+  }
+}
