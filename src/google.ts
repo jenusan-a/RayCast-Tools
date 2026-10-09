@@ -125,6 +125,62 @@ export async function createEvent(event: { title: string; notes?: string; start:
   );
 }
 
+export type CalendarEvent = {
+  id: string;
+  summary?: string;
+  description?: string;
+  location?: string;
+  htmlLink?: string;
+  hangoutLink?: string;
+  status?: string;
+  /** Timed events have `dateTime`; all-day events have `date` (the end date is exclusive). */
+  start: { dateTime?: string; date?: string };
+  end: { dateTime?: string; date?: string };
+  attendees?: { self?: boolean; responseStatus?: string }[];
+  organizer?: { self?: boolean };
+};
+
+/** Events on your main Google Calendar that overlap `day` (YYYY-MM-DD), in start order, minus ones you declined. */
+export async function getEvents(day: string): Promise<CalendarEvent[]> {
+  const [y, m, d] = day.split("-").map(Number);
+  const params = new URLSearchParams({
+    timeMin: new Date(y, m - 1, d).toISOString(),
+    timeMax: new Date(y, m - 1, d + 1).toISOString(),
+    singleEvents: "true",
+    orderBy: "startTime",
+    maxResults: "250",
+  });
+  const data = await request<{ items?: CalendarEvent[] }>(`/calendars/primary/events?${params}`, {}, CALENDAR_API);
+  return (data.items ?? []).filter(
+    (event) => event.status !== "cancelled" && !event.attendees?.some((a) => a.self && a.responseStatus === "declined"),
+  );
+}
+
+/** Move an event to new start and end times; guests get an update email. */
+export async function updateEventTime(eventId: string, time: { start: Date; end: Date }): Promise<CalendarEvent> {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return request<CalendarEvent>(
+    `/calendars/primary/events/${encodeURIComponent(eventId)}?sendUpdates=all`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        start: { dateTime: toLocalDateTime(time.start), timeZone },
+        end: { dateTime: toLocalDateTime(time.end), timeZone },
+      }),
+    },
+    CALENDAR_API,
+  );
+}
+
+/** Cancel an event you organise (guests are told), or remove one you were invited to from your calendar. */
+export async function deleteEvent(eventId: string): Promise<void> {
+  await request(
+    `/calendars/primary/events/${encodeURIComponent(eventId)}?sendUpdates=all`,
+    { method: "DELETE" },
+    CALENDAR_API,
+  );
+}
+
 /** "2026-10-08T14:00:00", read by Google in the `timeZone` sent alongside it. */
 function toLocalDateTime(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, "0");

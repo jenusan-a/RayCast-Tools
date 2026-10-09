@@ -30,6 +30,13 @@
       "subtitle": "Google Tasks",
       "description": "See your tasks grouped by due date, and complete or delete them.",
       "mode": "view"
+    },
+    {
+      "name": "my-day",
+      "title": "My Day",
+      "subtitle": "Google Calendar",
+      "description": "See what you have planned for the day: your calendar events in order, plus the tasks due.",
+      "mode": "view"
     }
   ],
   "preferences": [
